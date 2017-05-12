@@ -9,7 +9,7 @@
     "dev": "webpack-dev-server --config ./config/webpack.config.js --content-base build",
     "serve": "serve -s ./build"
   },
-  "author": "",
+  "author": "Nick Van Doorn <vandoorn.nick@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "babel-core": "^6.24.1",
