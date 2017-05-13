@@ -1,1 +1,4 @@
-export const app = { fontSize: '40px' }
+export const app = {
+  fontSize: '40px',
+  display: 'flex'
+}
