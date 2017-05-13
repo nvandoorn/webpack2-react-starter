@@ -1,18 +1,17 @@
 const path = require('path')
-const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 
 const SRC_PATH = path.join(__dirname, '..', 'src')
-const BUILD_PATH = path.join(__dirname, '..', 'build', 'static')
+const BUILD_PATH = path.join(__dirname, '..', 'build')
 const PUBLIC_PATH = path.join(__dirname, '..', 'public')
 
 module.exports = {
   devtool: 'source-map',
   entry: './src/index.js',
   output: {
-    filename: 'bundle.js',
+    filename: './static/bundle.js',
     path: BUILD_PATH
   },
   module: {
@@ -81,10 +80,9 @@ module.exports = {
     }]
   },
   plugins: [
-    new ExtractTextPlugin('style.css'),
+    new ExtractTextPlugin('./static/style.css'),
     new HtmlWebpackPlugin({
       template: path.join(PUBLIC_PATH, 'index.html'),
-      filename: '../index.html',
       inject: 'body'
     })
   ]
