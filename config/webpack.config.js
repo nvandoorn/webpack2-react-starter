@@ -1,4 +1,5 @@
 const path = require('path')
+const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
@@ -8,6 +9,7 @@ const BUILD_PATH = path.join(__dirname, '..', 'build', 'static')
 const PUBLIC_PATH = path.join(__dirname, '..', 'public')
 
 module.exports = {
+  devtool: 'source-map',
   entry: './src/index.js',
   output: {
     filename: 'bundle.js',
@@ -15,7 +17,22 @@ module.exports = {
   },
   module: {
     rules: [{
+      exclude: [
+        /\.html$/,
+        /\.(js|jsx)$/,
+        /\.css$/,
+        /\.json$/,
+        /\.svg$/
+      ],
+      loader: 'url',
+      query: {
+        limit: 10000,
+        name: 'static/media/[name].[hash:8].[ext]'
+      }
+    },
+    {
       test: /\.(js|jsx)$/,
+      enforce: 'pre',
       use: ['eslint-loader'],
       include: SRC_PATH
     },
