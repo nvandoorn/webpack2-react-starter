@@ -10,7 +10,7 @@
   "scripts": {
     "clean": "rimraf ./build/*",
     "build": "npm run clean && NODE_ENV=production webpack --config ./config/webpack.config.js",
-    "dev": "webpack-dev-server --config ./config/webpack.config.js --content-base build",
+    "dev": "webpack-dev-server --config ./config/webpack.config.js",
     "serve": "serve -s ./build"
   },
   "author": "Nick Van Doorn <vandoorn.nick@gmail.com>",
@@ -25,7 +25,10 @@
     "css-js-loader": "^0.3.0",
     "css-loader": "^0.28.1",
     "eslint": "^3.19.0",
+    "eslint-config-react-app": "^0.6.2",
     "eslint-loader": "^1.7.1",
+    "eslint-plugin-flowtype": "^2.21.0",
+    "eslint-plugin-import": "^2.0.1",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.3",
     "extract-text-webpack-plugin": "^2.1.0",
@@ -38,6 +41,7 @@
     "rimraf": "^2.6.1",
     "serve": "^5.1.5",
     "uglifyjs-webpack-plugin": "^0.4.3",
+    "url-loader": "^0.5.8",
     "webpack": "^2.5.1",
     "webpack-dev-server": "^2.4.5"
   },
