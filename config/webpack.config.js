@@ -11,23 +11,32 @@ module.exports = {
   devtool: 'source-map',
   entry: './src/index.js',
   output: {
-    filename: './static/bundle.js',
+    filename: 'bundle.js',
     path: BUILD_PATH
   },
   module: {
-    rules: [{
+    rules: [
+    {
+      test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+      use: ['file-loader']
+    },
+    {
       exclude: [
+        /\.ttf$/,
+        /\.eot$/,
         /\.html$/,
         /\.(js|jsx)$/,
         /\.css$/,
         /\.json$/,
         /\.svg$/
       ],
-      loader: 'url',
-      query: {
-        limit: 10000,
-        name: 'static/media/[name].[hash:8].[ext]'
-      }
+      use: [{
+        loader:'url-loader',
+        query: {
+          limit: 10000,
+          name: 'media/[name].[hash:8].[ext]'
+        }
+      }]
     },
     {
       test: /\.(js|jsx)$/,
@@ -69,7 +78,8 @@ module.exports = {
         include: SRC_PATH,
         use: [{
           loader: 'babel-loader',
-          query: {
+          options: {
+            plugins: ['transform-decorators-legacy'],
             presets: [
               'es2015',
               'react'
@@ -80,7 +90,7 @@ module.exports = {
     }]
   },
   plugins: [
-    new ExtractTextPlugin('./static/style.css'),
+    new ExtractTextPlugin('style.css'),
     new HtmlWebpackPlugin({
       template: path.join(PUBLIC_PATH, 'index.html'),
       inject: 'body'
