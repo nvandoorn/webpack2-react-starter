@@ -1,11 +1,13 @@
 const path = require('path')
+const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const InterpolateHtmlPlugin = require('interpolate-html-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 
 const SRC_PATH = path.join(__dirname, '..', 'src')
 const BUILD_PATH = path.join(__dirname, '..', 'build')
 const PUBLIC_PATH = path.join(__dirname, '..', 'public')
+const NODE_PATH = path.join(__dirname, '..', 'node_modules')
 
 module.exports = {
   devtool: 'source-map',
@@ -18,7 +20,12 @@ module.exports = {
     rules: [
     {
       test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-      use: ['file-loader']
+      use: [{
+        loader: 'file-loader',
+        query: {
+          name: 'fonts/[name].[hash:8].[ext]'
+        }
+      }]
     },
     {
       exclude: [
@@ -46,12 +53,14 @@ module.exports = {
     },
     {
       test: /\.css$/,
+      include: NODE_PATH,
       use: ExtractTextPlugin.extract({
         use: ['css-loader']
       })
     },
     {
-      test: /\.css\.js$/,
+      test: /\.css$/,
+      exclude: NODE_PATH,
       use: ExtractTextPlugin.extract({
         use: [{
           loader: 'css-loader',
@@ -64,14 +73,14 @@ module.exports = {
         {
           loader: 'postcss-loader',
           options:{
-            plugins: () => [require('postcss-nesting'), require('autoprefixer')]
+            plugins: () => [
+              require('postcss-nesting'),
+              require('postcss-cssnext'),
+              require('precss')
+            ]
           }
         }]
       })
-    },
-    {
-      test: /\.css\.js$/,
-      use: ['css-js-loader']
     },
     {
       test: /\.(js|jsx)$/,
@@ -90,7 +99,15 @@ module.exports = {
     }]
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+      }
+    }),
     new ExtractTextPlugin('style.css'),
+    new InterpolateHtmlPlugin({
+      APP_TITLE: process.env.APP_TITLE
+    }),
     new HtmlWebpackPlugin({
       template: path.join(PUBLIC_PATH, 'index.html'),
       inject: 'body'
@@ -98,4 +115,4 @@ module.exports = {
   ]
 }
 
-if(process.env.NODE_ENV === 'production') module.exports.plugins.push(new UglifyJSPlugin())
+if(process.env.NODE_ENV === 'production') module.exports.plugins.push(new webpack.optimize.UglifyJsPlugin())
