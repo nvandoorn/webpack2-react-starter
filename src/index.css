@@ -1,0 +1,9 @@
+@import "./index.config.css";
+
+.app {
+  font-size: $fontSize;
+        display: flex;
+  @if 3 < 5 {
+    background: rebeccapurple;
+  }
+}
