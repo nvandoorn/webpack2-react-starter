@@ -4,13 +4,17 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const InterpolateHtmlPlugin = require('interpolate-html-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-const SRC_PATH = path.join(__dirname, '..', 'src')
-const BUILD_PATH = path.join(__dirname, '..', 'build')
-const PUBLIC_PATH = path.join(__dirname, '..', 'public')
-const NODE_PATH = path.join(__dirname, '..', 'node_modules')
+const joinDir = dir => path.join(__dirname, '..', dir)
+const SRC_PATH = joinDir('src')
+const BUILD_PATH = joinDir('build')
+const PUBLIC_PATH = joinDir('public')
+const NODE_PATH = joinDir('node_modules')
+const FILE_FORMAT = '[name].[hash:8].[ext]'
+
+const isProduction = process.env.NODE_ENV === 'production'
 
 module.exports = {
-  devtool: 'source-map',
+  devtool: isProduction ? false : 'cheap-eval-source-map',
   entry: './src/index.js',
   output: {
     filename: 'bundle.js',
@@ -19,16 +23,16 @@ module.exports = {
   module: {
     rules: [
     {
-      test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+      test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, // load the fonts
       use: [{
         loader: 'file-loader',
         query: {
-          name: 'fonts/[name].[hash:8].[ext]'
+          name: path.join('fonts', FILE_FORMAT)
         }
       }]
     },
     {
-      exclude: [
+      exclude: [ // load other static assets
         /\.ttf$/,
         /\.eot$/,
         /\.html$/,
@@ -41,26 +45,20 @@ module.exports = {
         loader:'url-loader',
         query: {
           limit: 10000,
-          name: 'media/[name].[hash:8].[ext]'
+          name: path.join('media', FILE_FORMAT)
         }
       }]
     },
     {
-      test: /\.(js|jsx)$/,
-      enforce: 'pre',
-      use: ['eslint-loader'],
-      include: SRC_PATH
-    },
-    {
-      test: /\.css$/,
+      test: /\.css$/, // load css libs without css modules or postcss
       include: NODE_PATH,
       use: ExtractTextPlugin.extract({
         use: ['css-loader']
       })
     },
     {
-      test: /\.css$/,
-      exclude: NODE_PATH,
+      test: /\.(css\.js|css)$/, // TODO remove .css.js from regex after migrating
+      include: SRC_PATH,
       use: ExtractTextPlugin.extract({
         use: [{
           loader: 'css-loader',
@@ -83,6 +81,10 @@ module.exports = {
       })
     },
     {
+      test: /\.css\.js$/, // TODO remove after migrating to postcss
+      use: ['css-js-loader']
+    },
+    {
       test: /\.(js|jsx)$/,
         include: SRC_PATH,
         use: [{
@@ -96,6 +98,12 @@ module.exports = {
             cacheDirectory: true
           }
         }]
+    },
+    {
+      test: /\.(js|jsx)$/, // lint the js before babel
+      enforce: 'pre',
+      use: ['eslint-loader'],
+      include: SRC_PATH
     }]
   },
   plugins: [
@@ -115,4 +123,4 @@ module.exports = {
   ]
 }
 
-if(process.env.NODE_ENV === 'production') module.exports.plugins.push(new webpack.optimize.UglifyJsPlugin())
+if(isProduction) module.exports.plugins.push(new webpack.optimize.UglifyJsPlugin())
