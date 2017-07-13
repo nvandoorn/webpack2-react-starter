@@ -38,6 +38,7 @@ module.exports = {
         /\.html$/,
         /\.(js|jsx)$/,
         /\.css$/,
+        /\.scss$/,
         /\.json$/,
         /\.svg$/
       ],
@@ -51,13 +52,12 @@ module.exports = {
     },
     {
       test: /\.css$/, // load css libs without css modules or postcss
-      include: NODE_PATH,
       use: ExtractTextPlugin.extract({
         use: ['css-loader']
       })
     },
     {
-      test: /\.(css\.js|css)$/, // TODO remove .css.js from regex after migrating
+      test: /\.(css\.js|scss)$/, // TODO remove .css.js from regex after migrating
       include: SRC_PATH,
       use: ExtractTextPlugin.extract({
         use: [{
@@ -71,11 +71,14 @@ module.exports = {
         {
           loader: 'postcss-loader',
           options:{
-            plugins: () => [
-              require('postcss-nesting'),
-              require('postcss-cssnext'),
-              require('precss')
-            ]
+            plugins: () => [require('postcss-cssnext')]
+          }
+        },
+        'sass-loader',
+        {
+          loader: 'sass-resources-loader',
+          options: {
+            resources: [joinDir('./src/variables.scss')]
           }
         }]
       })

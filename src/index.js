@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import FA from 'react-fontawesome'
 
-import { app } from './index.css'
+import { app } from './index.scss'
 import { anotherOne } from './index.css.js'
 import '../node_modules/font-awesome/css/font-awesome.css'
 
